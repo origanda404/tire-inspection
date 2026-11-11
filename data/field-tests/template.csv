@@ -1,0 +1,1 @@
+session_id,tire_id,view_id,image_path,captured_at,model_version,model_sha256,argmax_prediction,final_prediction,p_normal,p_warning,p_abnormal,inspector_label,inspector_reason,lighting,distance_cm,camera,device,latency_ms,result_json_path,notes

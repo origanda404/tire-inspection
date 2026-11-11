@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-10",
+  "source_package_hashes": {
+    "inference_engine.py": "11ff840f38c2e5e3c8e888c7f50b897c20103cd7190c97d291a24d321cadb0c1",
+    "predict.py": "2e69f6701b81d1e584f9f77d60b8bb962d7c2784e80f97d958c51597333a0d09",
+    "README.md": "33c8596b3fa9dc994e5c2bcb2e5535648a8211aa7bf88f714f3314de352d17e0",
+    "models/production_model_audit.json": "c97a65cf78d3dd12b65cb101d3aa763283e674297a0d36fd7663a1faa14fa409",
+    "models/production_yolo11n_cls.onnx": "9d2bb77a894a578827439e7b9eef8fe35062ca76ea48173e29f99c1eb18bb4bd",
+    "models/production_yolo11n_cls.pt": "48048950c8dbc9ddee91a78db6ad0c992dfd807638643d34bce2eb9db2918b52"
+  },
+  "source_package_unchanged": true,
+  "model_weights_unchanged": true,
+  "decision_thresholds_unchanged": true,
+  "training": false,
+  "environment_installed": false,
+  "inference_rerun": false
+}

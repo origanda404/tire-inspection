@@ -1,0 +1,11 @@
+.venv/
+.cache/
+__pycache__/
+*.pyc
+outputs/*
+!outputs/README.md
+data/input/*
+!data/input/README.md
+data/field-tests/*
+!data/field-tests/README.md
+!data/field-tests/template.csv

@@ -1,0 +1,39 @@
+{
+  "model_name": "production_yolo11n_cls.pt",
+  "created_at": "2026-11-08 23:39:20",
+  "approved_config": "E4",
+  "dataset_version": "data_v2",
+  "total_training_images": 280,
+  "class_distribution": {
+    "Normal": 139,
+    "Warning": 45,
+    "Abnormal": 96
+  },
+  "training_args": {
+    "data": "C:\\Users\\origa\\Documents\\ChatGPT\\AI Tire Inspection\\01-ai-data\\round2\\data_v2\\full_dataset_224",
+    "epochs": 20,
+    "imgsz": 224,
+    "batch": 16,
+    "device": "cpu",
+    "workers": 0,
+    "seed": 20261106,
+    "deterministic": true,
+    "optimizer": "AdamW",
+    "lr0": 0.001,
+    "weight_decay": 0.0005,
+    "patience": 0,
+    "plots": false,
+    "project": "C:\\Users\\origa\\Documents\\ChatGPT\\AI Tire Inspection\\01-ai-data\\round2\\models",
+    "name": "production_yolo11n_cls_E4",
+    "exist_ok": false,
+    "amp": false,
+    "auto_augment": null,
+    "erasing": 0.0,
+    "freeze": 10
+  },
+  "elapsed_seconds": 191.9,
+  "initial_weights_sha256": "c62d41bf9625777760018bf914d2e6cd472420ccd01706d97a61cb6c82502bd7",
+  "production_model_sha256": "48048950c8dbc9ddee91a78db6ad0c992dfd807638643d34bce2eb9db2918b52",
+  "target_deployment": "Raspberry Pi 4 / CPU / Edge Device",
+  "inspection_engine": "inference_engine.py (Safety Threshold & Worst-case aggregation)"
+}

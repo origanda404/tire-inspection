@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Predict one image",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/inference/predict.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "--image",
+        "${input:imagePath}"
+      ]
+    },
+    {
+      "name": "Inspect supplied views",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/inference/inference_engine.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "args": [
+        "--input",
+        "${input:viewsPath}",
+        "--json-out",
+        "${workspaceFolder}/outputs/latest-inspection.json"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "imagePath",
+      "type": "promptString",
+      "description": "Image path"
+    },
+    {
+      "id": "viewsPath",
+      "type": "promptString",
+      "description": "Folder containing views of one tire"
+    }
+  ]
+}

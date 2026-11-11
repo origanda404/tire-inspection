@@ -1,0 +1,20 @@
+{
+  "version": "round2-baseline-2026-11-10",
+  "status": "accepted_by_user_for_field_trial; improvement_deferred",
+  "input_size": 224,
+  "class_names": [
+    "Normal",
+    "Warning",
+    "Abnormal"
+  ],
+  "decision_policy": {
+    "abnormal_threshold": 0.25,
+    "warning_threshold": 0.35,
+    "aggregation": "maximum severity of supplied views"
+  },
+  "sha256": {
+    "production_yolo11n_cls.pt": "48048950c8dbc9ddee91a78db6ad0c992dfd807638643d34bce2eb9db2918b52",
+    "production_yolo11n_cls.onnx": "9d2bb77a894a578827439e7b9eef8fe35062ca76ea48173e29f99c1eb18bb4bd"
+  },
+  "pi_verified": false
+}
