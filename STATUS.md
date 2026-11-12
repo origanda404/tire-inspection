@@ -1,3 +1,13 @@
+# อัปเดต 13 พฤศจิกายน 2026 — ONNX runner
+
+เพิ่ม inference/onnx_engine.py ใช้ ONNX Runtime + NumPy + Pillow โดยไม่ใช้ torch/ultralytics โมเดลและกฎเดิม ตรวจ hash ทั้ง PT/ONNX ตรง release
+
+เทียบ Windows กับตัวรันเดิม PT และ ONNX: ภาพวิจัย 280 ภาพไม่ซ้ำ + ภาพสังเคราะห์ 5 ภาพ ผล argmax/threshold ตรงทั้งหมด 285 ภาพ ความต่างคะแนนดิบสูงสุด 8.046627044677734e-07 (เกณฑ์ 1e-5) ทดสอบ boundary ของกฎ, aggregate, ไฟล์หาย และ CLI โดยบล็อก import torch/torchvision/ultralytics ผ่าน
+
+หลักฐาน outputs/onnx-runner-check-2026-11-13/ คู่มือ docs/PI_ONNX_RUNNER.md และ requirements-pi.txt ยังไม่ยืนยันการติดตั้ง/ผล/เวลา/RAM บน Pi จริง ไม่ใช่การประเมินความแม่นยำใหม่ ตัวรันใหม่ตรวจ hash/class/ไฟล์หายแล้ว ตัวรันเก่ายังไม่แก้ ไม่มีการตรวจ coverage หรือตัวตนยาง
+
+---
+
 # สถานะ — 10 พฤศจิกายน 2026
 
 ติดตั้ง .venv แยกบน Windows ด้วย Python 3.14.7 แล้ว ไม่ใช้ site-packages จาก round2 ทดสอบ single-image CLI และ multiple-image CLI/JSON ผ่าน โมเดลและthresholdเดิมไม่เปลี่ยน ตรวจhashตรงrelease
