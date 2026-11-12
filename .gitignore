@@ -1,5 +1,7 @@
 .venv/
+.venv-ui/
 .cache/
+data/field-runtime/
 __pycache__/
 *.pyc
 outputs/*

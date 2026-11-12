@@ -1,3 +1,11 @@
+# UX/UI field trial - 13 November 2026
+
+Added local-only touch UI, FastAPI sessions, camera adapter, unchanged ONNX engine integration, SQLite drafts/history and ZIP/CSV export. Windows real-engine API tests (4 cases), pip check and JS syntax pass. Browser upload, inference and finalize previously passed on Windows. Pi camera/UI integration remains unverified.
+
+Use branch ux-ui-pi-trial in a separate worktree and a new .venv-ui; preserve the working Pi checkout/environment. requirements-ui.txt installs web packages only. Read FIELD_UI_RUNBOOK.md before installation. No model, policy or motor-control changes.
+
+---
+
 ## อัปเดต 13 พฤศจิกายน 2026
 ตัวรันแยก inference/onnx_engine.py พร้อมทดสอบบน Windows แล้ว ดู PI_ONNX_RUNNER.md และ STATUS.md ปัญหาพึ่งพา torch/class mapping/ไฟล์หายได้รับการป้องกันในตัวรันใหม่นี้เท่านั้น ตัวรันเดิมและข้อจำกัด coverage ยังคงเดิม งานถัดไปยืนยันติดตั้งและเทียบผลบน Pi จริง
 
