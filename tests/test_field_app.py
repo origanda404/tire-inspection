@@ -86,6 +86,34 @@ class FieldAppTest(unittest.TestCase):
         with TestClient(create_app(self.tmp.name,camera=OfflineCamera()),headers=HEADERS) as reopened:
             self.assertEqual(reopened.get(f'/api/sessions/{sid}').json()['status'],'final')
 
+    def test_camera_preview_reconnect_capture_diagnostics(self):
+        from field_app.camera import PiCamera
+        from test_review_fixes import Device
+        camera = PiCamera(Device)
+        with tempfile.TemporaryDirectory() as directory:
+            app = create_app(directory, engine_factory=lambda: self.engine, camera=camera)
+            with TestClient(app, headers=HEADERS) as client:
+                self.assertEqual(client.post('/api/camera/reconnect').status_code, 200)
+                response = client.get('/api/camera/preview')
+                self.assertEqual(response.status_code, 200, response.text[:100])
+                self.assertIn('x-frame-sequence', response.headers)
+                self.assertEqual(Image.open(io.BytesIO(response.content)).size, (640,480))
+                diagnostics = client.get('/api/camera/diagnostics').json()
+                self.assertEqual(diagnostics['properties']['Model'], 'test')
+                self.assertIn('field_app/camera.py', diagnostics['software_sha256'])
+                sid = client.post('/api/sessions', json={
+                    'tire_id':'camera-test','operator':'test','source':'camera'}).json()['id']
+                item = client.post(f'/api/sessions/{sid}/capture').json()
+                self.assertEqual(len(item['images']), 1)
+                view = item['images'][0]
+                image = client.get(f'/api/sessions/{sid}/images/{view["id"]}')
+                self.assertEqual(Image.open(io.BytesIO(image.content)).size, (1280,960))
+                self.assertIn('camera_configuration', view['camera_metadata'])
+                old = camera.device
+                self.assertEqual(client.post('/api/camera/reconnect').status_code, 200)
+                self.assertTrue(old.closed)
+                self.assertIsNot(camera.device, old)
+
     def test_bad_inputs_camera_and_cross_origin(self):
         sid=self.new()
         self.assertEqual(self.client.post(f'/api/sessions/{sid}/analyze').status_code,422)

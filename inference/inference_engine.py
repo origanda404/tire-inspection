@@ -3,9 +3,11 @@ import argparse, json, os, time
 from pathlib import Path
 R = Path(__file__).resolve().parent
 os.environ['YOLO_CONFIG_DIR'] = str(R.parent / '.cache' / 'ultralytics')
-import torch
-from ultralytics import YOLO
 from PIL import Image, ImageOps
+if __package__:
+    from .input_contract import classifier_scores, collect_files
+else:
+    from input_contract import classifier_scores, collect_files
 
 SEVERITY = {'Normal': 0, 'Warning': 1, 'Abnormal': 2}
 REV_SEVERITY = {0: 'Normal', 1: 'Warning', 2: 'Abnormal'}
@@ -19,12 +21,12 @@ def inspect_single_view(model, img_path, imgsz=224, abnormal_thresh=0.25, warnin
     lat_ms = (time.perf_counter() - t0) * 1000
 
     names = res.names
-    scores = {names[i]: float(res.probs.data[i]) for i in range(len(names))}
+    scores = classifier_scores(res)
     argmax_pred = names[res.probs.top1]
 
-    p_abn = scores.get('Abnormal', 0.0)
-    p_war = scores.get('Warning', 0.0)
-    p_nor = scores.get('Normal', 0.0)
+    p_abn = scores['Abnormal']
+    p_war = scores['Warning']
+    p_nor = scores['Normal']
 
     if p_abn >= abnormal_thresh:
         safety_pred = 'Abnormal'
@@ -88,25 +90,19 @@ def main():
     ap.add_argument('--json-out', type=str, default=None, help="Path to save output JSON")
     args = ap.parse_args()
 
-    inp = Path(args.input)
-    if inp.is_dir():
-        files = sorted(list(inp.glob('*.jpg')) + list(inp.glob('*.png')) + list(inp.glob('*.jpeg')))
-    elif ',' in args.input:
-        files = [Path(p.strip()) for p in args.input.split(',') if Path(p.strip()).is_file()]
-    elif inp.is_file():
-        files = [inp]
-    else:
-        raise SystemExit(f"Input path not found: {args.input}")
-
-    if not files:
-        raise SystemExit(f"No image files found in {args.input}")
+    files = collect_files(args.input)
 
     # Find model
-    from predict import find_default_model
+    if __package__:
+        from .predict import find_default_model
+    else:
+        from predict import find_default_model
     model_path = Path(args.model) if args.model else find_default_model()
     if not model_path or not model_path.is_file():
         raise SystemExit("Model checkpoint not found.")
 
+    import torch
+    from ultralytics import YOLO
     torch.set_num_threads(4)
     model = YOLO(str(model_path))
 

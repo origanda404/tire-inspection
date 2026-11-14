@@ -211,11 +211,28 @@ def create_app(data_dir=None, engine_factory=None, camera=None):
             raise HTTPException(503, "เปิดกล้องไม่ได้: " + str(exc)) from exc
         return health()
 
+    @app.post("/api/camera/reconnect")
+    def camera_reconnect():
+        try:
+            camera.restart()
+        except Exception as exc:
+            raise HTTPException(503, "เชื่อมกล้องใหม่ไม่ได้: " + str(exc)) from exc
+        return health()
+
+    @app.get("/api/camera/diagnostics")
+    def camera_diagnostics():
+        result = camera.diagnostics()
+        result["software_sha256"] = {
+            path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
+            for path in ("field_app/camera.py", "field_app/server.py", "ui/app.js")}
+        return result
+
     @app.get("/api/camera/preview")
     def preview():
         try:
-            data, _ = camera.jpeg()
-            return Response(data, media_type="image/jpeg")
+            data, info = camera.preview()
+            return Response(data, media_type="image/jpeg", headers={
+                "X-Frame-Sequence": str(info["sequence"]), "X-Frame-Age-Ms": str(info["age_ms"])})
         except Exception as exc:
             raise HTTPException(503, "อ่านภาพกล้องไม่ได้: " + str(exc)) from exc
 
@@ -257,10 +274,13 @@ def create_app(data_dir=None, engine_factory=None, camera=None):
             item = editable(sid)
             if item["source"] != "camera":
                 raise HTTPException(409, "รอบนี้ใช้ภาพนำเข้า")
-            try:
-                data, metadata = camera.jpeg()
-            except Exception as exc:
-                raise HTTPException(503, "ถ่ายภาพไม่สำเร็จ: " + str(exc)) from exc
+        # Camera I/O must not block unrelated sessions or analysis progress.
+        try:
+            data, metadata = camera.jpeg()
+        except Exception as exc:
+            raise HTTPException(503, "ถ่ายภาพไม่สำเร็จ: " + str(exc)) from exc
+        with lock:
+            item = editable(sid)  # Session may have been finalized/analyzed while waiting.
             return add_image(item, data, "Camera " + now(), metadata)
 
     @app.get("/api/sessions/{sid}/images/{vid}")

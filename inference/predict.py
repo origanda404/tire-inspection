@@ -3,9 +3,11 @@ import argparse, os, time
 from pathlib import Path
 R = Path(__file__).resolve().parent
 os.environ['YOLO_CONFIG_DIR'] = str(R.parent / '.cache' / 'ultralytics')
-import torch
-from ultralytics import YOLO
 from PIL import Image, ImageOps
+if __package__:
+    from .input_contract import classifier_scores
+else:
+    from input_contract import classifier_scores
 
 def find_default_model():
     # Use the packaged model, never an experimental fold or external workspace.
@@ -42,6 +44,8 @@ def main():
         padded = ImageOps.pad(ImageOps.exif_transpose(im).convert('RGB'), (args.imgsz, args.imgsz), method=Image.Resampling.LANCZOS, color=(114, 114, 114))
 
     # Load model
+    import torch
+    from ultralytics import YOLO
     torch.set_num_threads(4)
     model = YOLO(str(model_path))
 
@@ -51,13 +55,13 @@ def main():
     lat_ms = (time.perf_counter() - t0) * 1000
 
     names = res.names
-    scores = {names[i]: float(res.probs.data[i]) for i in range(len(names))}
+    scores = classifier_scores(res)
     argmax_pred = names[res.probs.top1]
 
     # Safety-First Logic
-    p_abn = scores.get('Abnormal', 0.0)
-    p_war = scores.get('Warning', 0.0)
-    p_nor = scores.get('Normal', 0.0)
+    p_abn = scores['Abnormal']
+    p_war = scores['Warning']
+    p_nor = scores['Normal']
 
     if p_abn >= args.abnormal_thresh:
         safety_pred = 'Abnormal'
